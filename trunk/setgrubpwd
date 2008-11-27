@@ -1,0 +1,2 @@
+#!/bin/bash
+T=`mktemp` && script -qc grub-md5-crypt "$T" && P=`grep -iv password "$T"` && { rm "$T"; setconfvar -- "${1:-/boot/grub/menu.lst}" password "--md5 $P"; }
