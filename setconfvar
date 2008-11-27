@@ -1,0 +1,61 @@
+#!/bin/bash
+## Set variable in config file to given value, or comment it out.
+##
+##  * The variable has to exist already in the config file.
+
+OPT=`getopt -o nh --long unset,help -n "${0##*/}" -- "$@"`  && eval set -- "$OPT"  || exit 2
+
+USE="Usage: ${0##*/} [OPTION]... {file} {variable} [value]
+  -n, --unset
+        comment variable out
+  -h, --help
+        display this help and exit
+"
+
+O=
+while true; do
+    case "$1" in
+        (-n|--unset)
+            O=unset; shift
+            ;;
+
+        (-h|--help)
+            echo "$USE"; exit 0
+            ;;
+
+        (--)
+            shift; break
+            ;;
+
+        (*)
+            echo "${0##*/}: internal error: $1" 2>&1; exit 1
+            ;;
+    esac
+done
+
+if [ -z "$2" ]; then echo "${0##*/}: missing argument (\"${0##*/} --help\" for help)" 2>&1; exit 2; fi
+
+if [ ! -f "$1" -o ! -w "$1" ]; then echo "${0##*/}: not a writable file: '$1'" 2>&1; exit 1; fi
+
+if [ "$O" = "unset" ]; then
+    # comment variable out
+    sed -i "s/^\( *\)\($2\)\( \+=\? *\| *=\? \+\|=\)\(.*\)/\1#\2\3\4/" "$1"
+    exit $?
+
+elif grep -q "^ *#\? *$2\( \+=\? *\| *=\? \+\|=\)" "$1"; then
+
+    if grep -q "^ *$2\( \+=\? *\| *=\? \+\|=\)" "$1"; then
+        # set value to variable
+        sed -i "s/^\( *$2\)\( \+=\? *\| *=\? +\|=\).*/\1\2${3//\//\\/}/" "$1"
+        exit $?
+
+    else
+        # set value and uncomment variable (first occurence only)
+        # http://www.linuxtopia.org/online_books/linux_tool_guides/the_sed_faq/sedfaq4_004.html
+        sed -i "0,/^\( *\)\(# *\)\($2\)\( \+=\? *\| *=\? +\|=\).*/s//\1\3\4${3//\//\\/}/" "$1"
+        exit $?
+    fi
+
+else
+    echo "${0##*/}: variable '$2' not found in '$1'" 2>&1; exit 1;
+fi

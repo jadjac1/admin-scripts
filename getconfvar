@@ -1,0 +1,4 @@
+#!/bin/bash
+[ -z "$2" ]  && echo "Usage: ${0##*/} {file} {variable}" 2>&1  && exit 1
+
+grep -n "^ *#\? *$2\( \+=\? *\| *=\? \+\|=\)" "$1"
