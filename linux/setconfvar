@@ -2,6 +2,7 @@
 ## Set variable in config file to given value, or comment it out.
 ##
 ##  * The variable has to exist already in the config file.
+##  * Required GNU SED
 
 OPT=`getopt -o nh --long unset,help -n "${0##*/}" -- "$@"`  && eval set -- "$OPT"  || exit 2
 
