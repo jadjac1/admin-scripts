@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Based on https://help.ubuntu.com/community/AutomaticSecurityUpdates
+
+_adm=root@sol-5.net
+_log=/var/log/apt-security-updates
+
+quit () {
+    [ -f "$_out" ] && rm $_out
+    exit $1
+    }
+
+error () {
+    [ -f "$_out" ] || _out=/dev/stderr	
+    report "$2 ($1)" | mailer error
+    report "`date`: $2 ($1)" >> $_log-failed
+    report "Error: $2 ($1)" >&2
+    quit 1
+    }
+
+report () {
+    echo -e "$1"
+    [ -f "$_out" ] && sed "s/^/    /" $_out
+    }
+
+mailer () {
+    echo "Mail -s \"apt-security-updates $1 @ `uname -nsr`\" $_adm" >> $_out 2>&1
+    mail -s "apt-security-updates $1 @ `uname -nsr`" $_adm >> $_out 2>&1
+    }
+
+run () {
+    $* >> $_out 2>&1 || error $? "command failed: $*"
+    }
+
+_out= && _out=`mktemp` && [ -f "$_out" ] || error $? "mktemp failed"
+run aptitude update
+run aptitude safe-upgrade -o Aptitude::Delete-Unused=false --assume-yes --target-release `lsb_release -cs`-security
+grep -q "^0 " $_out && report "No security updates available." 1>&2 && quit 0
+report "Updated" | mailer success
+report "\n\n[`date`]\n" >> $_log
+quit 0
