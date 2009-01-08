@@ -1,0 +1,3 @@
+#!/bin/sh
+rep=http://admin-scripts.googlecode.com/svn/trunk/linux/
+for f in "$@"; do echo "Installing $f" && wget "$rep$f" -P /usr/bin && chmod +x "/usr/bin/$f"; done
