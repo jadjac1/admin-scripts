@@ -1,0 +1,8 @@
+#!/bin/sh
+#args=
+for arg in "$@"; do echo -n "\"$arg\" "; args="$args \"$arg\""; done; echo
+#while [ -n "$1" ]; do echo -n "\"$1\" "; args="$args \"$1\""; shift; done; echo
+#echo $args
+#args=${args:1}
+#export args
+#export -p

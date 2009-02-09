@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+# adds package to python path
+
+__version__ = '0.2'
+
+import sys, os
+from os.path import abspath, basename, exists, isfile, join
+from shutil import copy2
+from distutils.sysconfig import get_python_lib
+from optparse import OptionParser
+from string import maketrans
+
+parser = OptionParser(
+    usage="%prog [options]",
+    version="%%prog %s" % __version__)
+
+parser.add_option("-p", "--package", metavar='NAME',
+    help="package name [default: '%default']")
+
+parser.add_option("-s", "--source-dir", metavar='DIR',
+    help="add DIR to python path [default: '%default']")
+
+parser.add_option("-d", "--install-dir", metavar='DIR',
+    help="install .pth, .egg-info files to DIR [default: '%default']")
+
+parser.add_option("-e", "--egg-info", metavar='FILE',
+    help="package info file [default: source/package.egg-info/PKG_INFO]")
+
+parser.add_option("-n", "--dry-run",
+    action="store_true",
+    help="don't actually do anything")
+
+parser.add_option("-q", "--quiet",
+    action="store_true",
+    help="don't print info messages")
+
+parser.add_option("-r", "--reinstall",
+    action="store_true",
+    help="force overwriting existing .pth and .egg-info files")
+
+parser.add_option("-u", "--uninstall",
+    action="store_true",
+    help="remove existing .pth and .egg-info files instead")
+
+
+parser.set_defaults(
+    package = basename(os.getcwd()).translate(maketrans('.+-', '___')),
+    source_dir = os.getcwd(),
+    install_dir = get_python_lib()
+    )
+
+options, args = parser.parse_args()
+
+if not options.package:
+    print >> sys.stderr, \
+        'Package name has to be provided via option, if it cannot be determined from name of current directory.'
+    exit(2)
+
+if options.uninstall and options.reinstall:
+    print >> sys.stderr, \
+        'Either --reinstall or --uninstall may be specified, not both.'
+    exit(2)
+
+pkg = options.package
+src = abspath(options.source_dir)
+dst = abspath(options.install_dir)
+
+spn = options.egg_info or join(src, '%s.egg-info' % pkg, 'PKG-INFO')
+dpn = join(dst, '%s.egg-info' % pkg)
+pth = join(dst, '%s.pth' % pkg)
+
+if options.uninstall:
+
+    def remove(fn):
+        if isfile(fn):
+            if not options.quiet:
+                print "* remove '%s'" % fn
+            if not options.dry_run:
+                os.remove(fn)
+        else:
+            if not options.quiet:
+                print "- already removed: '%s'" % fn
+
+    remove(dpn)
+    remove(pth)
+
+else:
+
+    if isfile(spn):
+        if options.reinstall or not exists(dpn):
+            if not options.quiet:
+                print "* copy '%s' to '%s'" % (spn, dpn)
+            if not options.dry_run:
+                copy2(spn, dpn)
+        else:
+            print >> sys.stderr, "- already exists: '%s'" % dpn
+    else:
+        print >> sys.stderr, "# package info not found: '%s'" % spn
+
+    if options.reinstall or not exists(pth):
+        if not options.quiet:
+            print "* setting '%s' to point to '%s'" % (pth, src)
+        if not options.dry_run:
+            f = open(pth, 'w')
+            f.write(src)
+            f.close()
+    else:
+        print >> sys.stderr, "- already exists: '%s'" % pth

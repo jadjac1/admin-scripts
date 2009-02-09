@@ -1,0 +1,2 @@
+#!/bin/sh
+find $@ -printf "c=[%CD %CH:%CM:%CS] m=[%TD %TH:%TM:%TS]  %s  %p\n"

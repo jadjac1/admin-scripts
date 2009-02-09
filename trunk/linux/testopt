@@ -1,0 +1,89 @@
+#!/bin/bash
+
+fullpath () {
+    # fullpath(path=.)
+    [[ "/" == "${1:0:1}" ]] && echo "$1"  ||  { pwd="`pwd`"; [[ -z "$1" ]] && echo "$pwd"; }  ||  { [[ "." == "$1" || "./" == "${1:0:2}" ]] && echo "$pwd${1:1}"; }  ||  { [[ ".." == "$1" || "../" == "${1:0:3}" ]] && echo "${pwd%/*}${1:2}" || echo "$pwd/$1"; }
+}
+
+fullcmd () {
+    # fullcmd(command, default=)
+    # .. returns full path of command
+    # .. if default is provided and command does not exist return default
+    #       .. executability is not checked, only file existence
+    [[ "$1" == "${1##*/}" ]] && { which "$1" || echo "$2"; }  ||  { [[ -f "$1" ]] && echo "$1" || echo "${2-$1}"; }
+}
+
+fp=`fullpath "$1"`
+fc=`fullcmd "$1"`
+fa=`fullcmd $@`
+
+echo $@
+echo $*
+echo "$@"
+echo "$*"
+
+echo
+echo "fullpath \$1  = $fp"
+echo "fullcmd \$1   = $fc"
+echo "fullcmd \$@   = $fa"
+
+echo
+echo "\$#           = $#"                # count
+echo "\${!#}        = ${!#}"             # last
+echo -n "args \$@      = "; args $@
+echo -n "args \$*      = "; args $*
+echo -n "args \"\$@\"     = "; args "$@"
+echo -n "args \"\$*\"     = "; args "$*"
+a=$@
+echo "\$@           = $a"                # all
+a=$*
+echo "\$*           = $a"                # all
+a="$@"
+echo "\"\$@\"         = $a"              # all
+a="$*"
+echo "\"\$*\"         = $a"              # all
+
+echo
+echo "\${1:-def}    = ${1:-def}"         # first or 'def'
+echo "\${1:+set}    = ${1:+set}"         # first ? 'set' : ''
+echo
+echo "\${none:=one} = ${none:=one}"      # 'one'
+echo "\${none}      = ${none}"           # 'one'
+echo
+echo "\${#1}        = ${#1}"             # len(first)
+echo "\${1:2}       = ${1:2}"            # first[2:]
+echo "\${1:0:2}     = ${1:0:2}"          # first[:2]
+#echo "\${1:\${#1}}   = ${1:${#1}}"       # first[-1:]
+#echo "\${1:0:\${#1}} = ${1:0:${#1}}"     # first[:-1]
+echo
+echo "\${1#*/}      = ${1#*/}"           # first - remove shortest ^.*/
+echo "\${1##*/}     = ${1##*/}"          # first - remove longest  ^.*/
+echo "\${1%/*}      = ${1%/*}"           # first - remove shortest /.*$
+echo "\${1%%/*}     = ${1%%/*}"          # first - remove longest  /.*$
+echo
+echo "\${1/\//*}    = ${1/\//*}"         # first - replace one / with *
+echo "\${1//\//*}   = ${1//\//*}"        # first - replace all / with *
+echo "\${1/#\//*}   = ${1/#\//*}"        # first - replace prefix / with *
+echo "\${1/%\//*}   = ${1/%\//*}"        # first - replace suffix / with *
+echo
+echo "\${!f*}       = ${!f*}"            # all f* vars
+echo "\${!f@}       = ${!f@}"            # all f* vars
+echo
+echo "\${1:?error}  = ${1:?error}"       # first or exit with 'error'
+echo
+shift
+echo "\$#           = $#"                # count
+echo "\${!#}        = ${!#}"             # last
+echo "\$@           = $@"                # all
+echo "\$*           = $*"                # all
+
+echo
+args=
+for arg in "$@"; do echo -n "\"$arg\" "; args="$args \"$arg\""; done; echo
+#while [ -n "$1" ]; do echo -n "\"$1\" "; args="$args \"$1\""; shift; done; echo
+echo $args
+args=${args:1}
+export args
+#echo "su -c \"echo \$args\" $USER":
+#su -c "echo \$args" $USER
+echo
