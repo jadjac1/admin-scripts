@@ -1,0 +1,50 @@
+#!/bin/bash
+[[ -z "$1" ]]  && echo "Usage:  `basename $0` share user [./dir] [options]" >&2  && exit 2
+
+share=$1
+user=$2
+
+path=${share#//}
+    # remove //
+cred=/etc/samba/cred/${path//\//.}
+    # replace all / with .
+serv=${path%%/*}
+    # remove path (longest tail /*)
+
+
+mdir=/mnt/${share#//}
+mopt=credentials=$cred
+
+[[ -z "$3" || "$3" == "." ]]  || mdir="$3"
+[[ -z "$4" ]]  || mopt="$mopt,$4"
+
+echo "Existing share (to be removed):"
+grep -i "$share " /etc/fstab
+echo
+echo "New share:"
+echo "$share  $mdir  cifs  $mopt  0 0"
+echo
+read -s -p "Type $user@$serv password, or press enter to cancel: " pass
+echo
+echo
+[[ -z "$pass" ]]  && echo "Cancelled!" >&2 && exit 1
+[[ -d "$mdir" ]]  && echo "Mount pouint already exists: `ls -ld "$mdir"`"  || ( mkdir -p "$mdir" || exit 1; )
+[[ -d "${cred%/*}" ]]  && echo "Credentials path already exists:  ${cred%/*}"  || { mkdir -p "${cred%/*}" && chmod 0700 "${cred%/*}" || exit 1; }
+
+[[ -e "$cred" ]]  && echo "Credentials file will be overwritten: `ls -l "$cred"`"
+
+echo username=$user>$cred  || exit 1
+echo password=$pass>>$cred || exit 1
+chmod 0600 "$cred" || exit 1
+echo "Credentials file created: `ls -l "$cred"`"
+
+cp /etc/fstab ~/fstab~ || exit 1
+grep -iv "$share " ~/fstab~ > /etc/fstab || exit 1
+echo "$share  $mdir  cifs  $mopt  0 0">>/etc/fstab || exit 1
+
+echo
+echo Updated shares:
+grep -i "$share " /etc/fstab
+echo
+
+mount "$share"
