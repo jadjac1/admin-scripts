@@ -1,0 +1,9 @@
+#!/bin/sh
+
+sudo aptitude install openssh-server
+
+if [ -n "$1" ]; then
+    sudo sed -i "s/^\( *Port\)\( \+=\? *\| *=\? +\|=\).*/\1\2443/" /etc/ssh/sshd_config
+    grep "^ *Port \+" /etc/ssh/sshd_config
+    sudo /etc/init.d/ssh force-reload
+    fi

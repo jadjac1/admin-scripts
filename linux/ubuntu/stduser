@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while [ -n "$1" ]; do
+    sudo useradd "$1" -s /bin/bash -m -G adm,dialout,cdrom,plugdev,lpadmin,admin,sambashare
+    sudo passwd "$1"
+    shift
+    done
