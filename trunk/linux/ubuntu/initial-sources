@@ -1,0 +1,28 @@
+#!/bin/sh
+
+## Opera
+##  # deb http://deb.opera.com/opera/ stable non-free
+sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
+
+## OpenOffice 3.0
+##  # see http://www.openoffice.cz/navody/instalace-openoffice-org-3-v-linuxu
+##  # deb http://ppa.launchpad.net/openoffice-pkgs/ubuntu intrepid main
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com D2BB86E0EBD0F0A43D4DB3A760D11217247D1CFF
+
+## Google
+##  # deb http://dl.google.com/linux/deb/ stable non-free
+wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
+
+## Xbmc
+##  # deb http://ppa.launchpad.net/team-xbmc-intrepid/ubuntu intrepid main
+##  # deb-src http://ppa.launchpad.net/team-xbmc-intrepid/ubuntu intrepid main
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 9117FCCCBCA93A97D9B4115E43C0AFF0D7FAE680
+
+## FreeNX
+##  # deb http://ppa.launchpad.net/freenx-team/ubuntu intrepid main
+##  # deb-src http://ppa.launchpad.net/freenx-team/ubuntu intrepid main
+# sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com F3A662B57D580D3A2E98E5152A8E3034D018A4CE
+
+## VirtualBox
+##  # deb http://download.virtualbox.org/virtualbox/debian intrepid non-free
+wget -q http://download.virtualbox.org/virtualbox/debian/sun_vbox.asc -O- | sudo apt-key add -

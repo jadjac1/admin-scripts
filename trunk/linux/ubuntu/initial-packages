@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Installation/removal of common Kubuntu packages
+#
+# sudo apt-get install ubuntu-restricted-extras w32codecs smplayer non-free-codecs rar arj unrar-free p7zip-full
+# sudo apt-get install picasa skype
+# sudo apt-get install google-desktop-linux
+# sudo apt-get install mozilla-thunderbird libstdc++5 adobe-flashplugin
+# sudo apt-get install opera
+# sudo apt-get install virtualbox-2.1
+# sudo aptitude install dict dictd dict-freedict-cze-eng dict-freedict-eng-cze dict-foldoc dict-jargon dict-web1913
