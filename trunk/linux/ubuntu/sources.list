@@ -55,12 +55,12 @@ deb http://security.ubuntu.com/ubuntu intrepid-security multiverse
 deb-src http://security.ubuntu.com/ubuntu intrepid-security multiverse
 
 ## Medibuntu
-##  # wget -q http://packages.medibuntu.org/medibuntu-key.gpg  -O- | sudo apt-key add -
+##  # wget -O- http://packages.medibuntu.org/medibuntu-key.gpg | sudo apt-key add -
 deb http://packages.medibuntu.org/ intrepid free non-free
 deb-src http://packages.medibuntu.org/ intrepid free non-free
 
 ## Opera
-##  # sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
+##  # wget -O- http://deb.opera.com/archive.key | sudo apt-key add -
 deb http://deb.opera.com/opera/ stable non-free
 
 ## OpenOffice 3.0
@@ -69,7 +69,7 @@ deb http://deb.opera.com/opera/ stable non-free
 deb http://ppa.launchpad.net/openoffice-pkgs/ubuntu intrepid main
 
 ## Google
-##  # wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
+##  # wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 deb http://dl.google.com/linux/deb/ stable non-free
 
 ## Xbmc
@@ -83,5 +83,5 @@ deb-src http://ppa.launchpad.net/team-xbmc-intrepid/ubuntu intrepid main
 # deb-src http://ppa.launchpad.net/freenx-team/ubuntu intrepid main
 
 ## VirtualBox
-##  # wget -q http://download.virtualbox.org/virtualbox/debian/sun_vbox.asc -O- | sudo apt-key add -
+##  # wget -O- http://download.virtualbox.org/virtualbox/debian/sun_vbox.asc | sudo apt-key add -
 deb http://download.virtualbox.org/virtualbox/debian intrepid non-free

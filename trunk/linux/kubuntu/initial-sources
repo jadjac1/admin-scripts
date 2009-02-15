@@ -1,8 +1,13 @@
 #!/bin/sh
 
+## Medibuntu
+##  # deb http://packages.medibuntu.org/ intrepid free non-free
+##  # deb-src http://packages.medibuntu.org/ intrepid free non-free
+wget -O- http://packages.medibuntu.org/medibuntu-key.gpg | sudo apt-key add -
+
 ## Opera
 ##  # deb http://deb.opera.com/opera/ stable non-free
-sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
+wget -O- http://deb.opera.com/archive.key | sudo apt-key add -
 
 ## OpenOffice 3.0
 ##  # see http://www.openoffice.cz/navody/instalace-openoffice-org-3-v-linuxu
@@ -11,7 +16,7 @@ sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com D2BB86E0EBD0F0A43D
 
 ## Google
 ##  # deb http://dl.google.com/linux/deb/ stable non-free
-wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | sudo apt-key add -
+wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
 ## Xbmc
 ##  # deb http://ppa.launchpad.net/team-xbmc-intrepid/ubuntu intrepid main
@@ -25,7 +30,7 @@ sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 9117FCCCBCA93A97D9
 
 ## VirtualBox
 ##  # deb http://download.virtualbox.org/virtualbox/debian intrepid non-free
-wget -q http://download.virtualbox.org/virtualbox/debian/sun_vbox.asc -O- | sudo apt-key add -
+wget -O- http://download.virtualbox.org/virtualbox/debian/sun_vbox.asc | sudo apt-key add -
 
 ## KDE 4.2
 ##  # deb http://ppa.launchpad.net/kubuntu-experimental/ubuntu intrepid main
