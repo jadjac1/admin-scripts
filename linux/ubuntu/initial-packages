@@ -1,11 +1,27 @@
 #!/bin/sh
 #
-# Installation/removal of common Kubuntu packages
+# Installation/removal of common Ubuntu packages
 #
-# sudo apt-get install ubuntu-restricted-extras w32codecs smplayer non-free-codecs rar arj unrar-free p7zip-full
+
+# sudo apt-get install compizconfig-settings-manager  # or: simple-ccsm was: ccsm
+
+# sudo apt-get install ubuntu-restricted-extras non-free-codecs rar arj unrar-free p7zip-full adobe-flashplugin
+# sudo apt-get install w32codecs
+# sudo apt-get install w64codecs
+
 # sudo apt-get install picasa skype
 # sudo apt-get install google-desktop-linux
-# sudo apt-get install mozilla-thunderbird libstdc++5 adobe-flashplugin
+# sudo apt-get install mozilla-thunderbird libstdc++5
 # sudo apt-get install opera
+
+# sudo apt-get install adobe-flashplugin    # canonical partners, 32 only
+# sudo apt-get install flashplugin-nonfree  # downloads from adobe, 32/64
+
+# sudo apt-get install xbmc
+# sudo apt-get install smplayer smplayer-themes
+
 # sudo apt-get install virtualbox-2.1
+
+# sudo apt-get install avant-window-navigator awn-manager awn-extras-applets
+
 # sudo aptitude install dict dictd dict-freedict-cze-eng dict-freedict-eng-cze dict-foldoc dict-jargon dict-web1913

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+compiz-on () {
+    #gnome-window-decorator &
+    compiz --replace &
+    #gconf
+    }
+
+compiz-off () {
+    #killall gnome-window-decorator
+    metacity --replace
+    }
+
+compiz-status () {
+    ps -C compiz.real > /dev/null
+    return $?
+    }
+
+case "$1" in
+    (on)
+        compiz-status || compiz-on
+        ;;
+    (off)
+        compiz-status && compiz-off
+        ;;
+    (switch)
+        compiz-status && compiz-off || compiz-on
+        ;;
+    (*)
+        echo "Usage: ${0##*/} on|off|status" 2>&1
+        exit 2
+        ;;
+esac
