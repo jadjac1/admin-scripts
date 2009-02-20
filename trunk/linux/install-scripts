@@ -1,14 +1,15 @@
 #!/bin/sh
 rep=http://admin-scripts.googlecode.com/svn/trunk/linux/
 dst=/usr/bin/
-owr=
 
 [ "$1" = "-h" ] || [ "$1" = "--help" ]  && echo "Usage: ${0##*/} {[OPTIONS] [TARGET/] {FILE}} ..." 1>&2  && exit
 
-for f in "$@"; do 
+for f in "$@"; do
    [ -z "$f" ]  && continue
-   [ "$f" = "-f" ]  && owr="1"  && continue
+
    [ -z "${f##*/}" ]  && [ -d "$f" ]  && dst="$f"  && continue  # if f ends with / and is directory, use it as destination directory
+
    # [ -e "$dst$f" ]  &&  [ "$owr" != "1" ]  && echo "Target already exists $dst$f. Use -f to overwrite it."  && continue
-   echo "Installing $dst$f ..."  && wget -N "$rep$f" -P "$dst"  && chmod +x "$dst$f" # only installs newer scripts, replace -N with -r to always overwrite
+
+   echo "Installing $dst$f ..."  && wget -N "$rep$f" -P "$dst"  && chmod +x "$dst${f##*/}"  # only installs newer scripts, replace -N with -nc to always overwrite
 done
