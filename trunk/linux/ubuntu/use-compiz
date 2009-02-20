@@ -1,33 +1,33 @@
 #!/bin/sh
 
-compiz.on () {
+compiz_on () {
     #gnome-window-decorator &
     compiz --replace &
     #gconf
     }
 
-compiz.off () {
+compiz_off () {
     #killall gnome-window-decorator
     metacity --replace
     }
 
-compiz.status () {
+compiz_status () {
     ps -C compiz.real > /dev/null
     return $?
     }
 
 case "$1" in
     (on)
-        compiz.status || compiz.on
+        compiz_status || compiz_on
         ;;
     (off)
-        compiz.status && compiz.off
+        compiz_status && compiz_off
         ;;
     (switch)
-        compiz.status && compiz.off || compiz.on
+        compiz_status && compiz_off || compiz_on
         ;;
     (status)
-        compiz.status
+        compiz_status
         exit $?
         ;;
     (*)
