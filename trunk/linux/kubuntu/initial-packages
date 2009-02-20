@@ -2,13 +2,25 @@
 #
 # Installation/removal of common Kubuntu packages
 #
+
 # sudo apt-get remove ktorrent konversation kmail kontact korganizer kaddressbook kdepim-wizards
-# sudo apt-get install kubuntu-restricted-extras w32codecs smplayer non-free-codecs rar arj unrar-free p7zip-full krename kompare krusader
+
+# sudo apt-get install kubuntu-restricted-extras smplayer non-free-codecs rar arj unrar-free p7zip-full krename kompare krusader
+# sudo apt-get install w32codecs
+# sudo apt-get install w64codecs
+
 # sudo apt-get install picasa skype
 # sudo apt-get install google-desktop-linux
-# sudo apt-get install firefox mozilla-thunderbird libstdc++5 adobe-flashplugin
+# sudo apt-get install firefox mozilla-thunderbird libstdc++5
 # sudo apt-get install opera
+
+# sudo apt-get install adobe-flashplugin    # canonical partners, 32 only
+# sudo apt-get install flashplugin-nonfree  # downloads from adobe, 32/64
+
 # sudo apt-get install amarok-kde4 xbmc
+# sudo apt-get install smplayer smplayer-themes
+
 # sudo apt-get install kdenlive
 # sudo apt-get install virtualbox-2.1
+
 # sudo aptitude install dict dictd dict-freedict-cze-eng dict-freedict-eng-cze dict-foldoc dict-jargon dict-web1913
