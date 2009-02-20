@@ -9,7 +9,9 @@ for f in "$@"; do
 
    [ -z "${f##*/}" ]  && [ -d "$f" ]  && dst="$f"  && continue  # if f ends with / and is directory, use it as destination directory
 
-   # [ -e "$dst$f" ]  &&  [ "$owr" != "1" ]  && echo "Target already exists $dst$f. Use -f to overwrite it."  && continue
+   df="$dst${f##*/}"
 
-   echo "Installing $dst$f ..."  && wget -N "$rep$f" -P "$dst"  && chmod +x "$dst${f##*/}"  # only installs newer scripts, replace -N with -nc to always overwrite
+   echo -e "\n\nInstalling $df ..."  && wget -N "$rep$f" -P "$dst"  && chmod +x "$df"  # only installs newer scripts, replace -N with -nc to always overwrite
+
+   ls -l "$df"
 done
