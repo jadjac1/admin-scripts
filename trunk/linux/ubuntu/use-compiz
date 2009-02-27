@@ -3,11 +3,13 @@
 compiz_on () {
     #gnome-window-decorator &
     compiz --replace &
-    #gconf
+        #gconf
+    [ -x avant-window-navigator ] && avant-window-navigator &
     }
 
 compiz_off () {
     #killall gnome-window-decorator
+    pkill -TERM avant-window-na
     metacity --replace
     }
 
