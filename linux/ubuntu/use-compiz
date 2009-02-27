@@ -1,22 +1,24 @@
 #!/bin/sh
 
 compiz_on () {
-    #gnome-window-decorator &
     compiz --replace &
         #gconf
-    [ -x avant-window-navigator ] && avant-window-navigator &
+
+    which gnome-window-decorator && gnome-window-decorator &
+    which avant-window-navigator && { sleep 3; avant-window-navigator & }
     }
 
 compiz_off () {
-    #killall gnome-window-decorator
-    pkill -TERM avant-window-na
-    metacity --replace
+    killall -TERM gnome-window-decorator
+    killall -TERM avant-window-navigator
+    metacity --replace &
     }
 
 compiz_status () {
     ps -C compiz.real > /dev/null
     return $?
     }
+
 
 case "$1" in
     (on)
@@ -36,4 +38,4 @@ case "$1" in
         echo "Usage: ${0##*/} on|off|switch|status" 2>&1
         exit 2
         ;;
-esac
+    esac
