@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# http://sourceforge.net/project/showfiles.php?group_id=22866&package_id=16942
+# http://www.jboss.org/jbossas/downloads/
+
+VER="${1:-5.0.1.GA-jdk6}"
+ARC="jboss-$VER.zip"
+DLD="/var/cache/install"
+DST="/opt"
+
+
+echo == Download $ARC from sourceforge.net to $DLD
+
+[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
+
+wget-sourceforge jboss "$DLD/$ARC" $2
+
+[ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
+
+
+echo == Extract $DLD/$ARC to $DST
+
+unzip -qn "$DLD/$ARC" -d "$DST" || exit $?
+
+if [ -d "$DST/jboss-${VER%-*}" ]; then
+
+    echo == Symlink $DST/jboss to $DST/jboss-${VER%-*}
+
+    ln -s "$DST/jboss-${VER%-*}" "$DST/jboss"
+
+    fi

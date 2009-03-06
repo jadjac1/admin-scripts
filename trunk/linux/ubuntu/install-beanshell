@@ -1,0 +1,18 @@
+#!/bin/sh
+
+[ -n "$JAVA_HOME" ] || { JAVA_HOME="$(readlink -e $(which java))" && JAVA_HOME="${JAVA_HOME%%/jre/bin/java}" && JAVA_HOME="${JAVA_HOME%%/bin/java}"; }
+
+VER="${1:-2.0b4}"
+ARC="bsh-$VER.jar"
+REF="http://www.beanshell.org/download.html"
+DLD="$JAVA_HOME/jre/lib/ext"
+OPT="-t1 --connect-timeout=5 -a \"$DLD/$ARC.log\""
+
+echo == Download $ARC from $REF to $DLD
+
+[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
+
+wget $OPT -rnd -l1 -e robots=off -np -NP "$DLD" -A "$ARC" "$REF"
+
+[ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
+

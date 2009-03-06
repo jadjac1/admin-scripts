@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Asia
+#	Ishikawa, Japan		http://jaist.dl.sourceforge.net/sourceforge/
+#  	Tainan, Taiwan		http://nchc.dl.sourceforge.net/sourceforge/
+# Australia	
+#	Sydney, Australia	http://optusnet.dl.sourceforge.net/sourceforge/
+# Europe
+#  	Lausanne, Switzerland	http://switch.dl.sourceforge.net/sourceforge/
+#	Bern, Switzerland	http://puzzle.dl.sourceforge.net/sourceforge/
+#	Duesseldorf, Germany	http://mesh.dl.sourceforge.net/sourceforge/
+#	Berlin, Germany		http://dfn.dl.sourceforge.net/sourceforge/
+#	Dublin, Ireland		http://heanet.dl.sourceforge.net/sourceforge/
+#	Bologna, Italy		http://garr.dl.sourceforge.net/sourceforge/
+#	Amsterdam, Netherlands	http://surfnet.dl.sourceforge.net/sourceforge/
+#	Kent, UK		http://kent.dl.sourceforge.net/sourceforge/
+# North America
+#	Seattle, WA		http://superb-west.dl.sourceforge.net/sourceforge/
+#	McLean, VI		http://superb-east.dl.sourceforge.net/sourceforge/
+#	San Jose, CA		http://internap.dl.sourceforge.net/sourceforge/
+# South America
+#	Curitiba, Brazil	http://ufpr.dl.sourceforge.net/sourceforge/
+
+[ -z "$2" ] && echo "Usage: ${0##*/} PROJECT [PATH/]FILE [MIRROR] [WGET_OPTIONS]" >&2 && exit 2
+
+PRJ="$1"
+shift
+
+ARC="${1##*/}"
+DLD="${1%/*}"
+[ "$DLD" = "$1" ] && DLD=.
+shift
+
+[ -n "$1" ] && grep -q "http://$1.dl.sourceforge.net/" "$0" && MIR="$1" && shift || MIR="$SOURCEFORGE_MIRROR"
+
+URL="http://downloads.sourceforge.net/$PRJ/$ARC"
+[ -n "$MIR" ] && URL="$URL?use_mirror=$MIR"
+
+SFD="sourceforge.net"
+SFZ="jobs.sourceforge.net"
+SFX="/project/,/projects/,/search/,/svn/,/viewvc/,/docman/,/news/,/mail/,/pm/,/account/,/community/,/job/,/softwaremap/"
+
+wget -rnd -l1 -t1 --no-cache --connect-timeout=5 -e robots=off -NP "$DLD" -a "$DLD/$ARC.log" -HD "$SFD" --exclude-domains "$SFZ" -X "$SFX" -A "$ARC" "$@" -- "$URL" 

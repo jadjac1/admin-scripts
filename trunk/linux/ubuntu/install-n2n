@@ -1,0 +1,34 @@
+#!/bin/sh
+
+REP="https://svn.ntop.org/svn/ntop/trunk/n2n"
+DLD="/var/cache/install/n2n"
+MAK="$DLD/scripts/mk_deb.sh"
+
+
+echo == Checkout $REP to $DLD
+
+[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
+
+cd "$DLD"
+svn co "$REP" . || exit $?
+
+[ ! -f "$MAK" ] && echo !! Cannot find make script $MAK. >&2 && exit 1
+
+
+echo == Install debian packaging tools
+
+aptitude install dpkg-dev cdbs dpatch
+
+
+echo == Build n2n package
+
+bash "$MAK" || exit $?
+
+DEB=$DLD/build_deb/n2n_*_`dpkg-architecture | grep DEB_BUILD_ARCH= | cut -d = -f 2`.deb
+
+[ ! -f $DEB ] && echo !! Cannot find package $DEB. >&2 && exit 1
+
+
+echo == Install n2n package $DEB
+
+dpkg -i $DEB
