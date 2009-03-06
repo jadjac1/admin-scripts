@@ -1,0 +1,24 @@
+#!/bin/sh
+
+[ -n "$JAVA_HOME" ] || { JAVA_HOME="$(readlink -e $(which java))" && JAVA_HOME="${JAVA_HOME%%/jre/bin/java}" && JAVA_HOME="${JAVA_HOME%%/bin/java}"; }
+
+ARC="jwhich.tar.gz"
+REF="http://www.fullspan.com/proj/jwhich/"
+DLD="/var/cache/install"
+DST="$JAVA_HOME/jre/lib/ext"
+LST="jwhich.jar"
+OPT="-t1 --connect-timeout=5 -a \"$DLD/$ARC.log\""
+
+
+echo == Download $ARC from $REF to $DLD
+
+[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
+
+wget $OPT -rnd -l1 -e robots=off -np -NP "$DLD" -A "$ARC" "$REF"
+
+[ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
+
+
+echo == Extract $LST from $DLD/$ARC to $DST
+
+ERR=0; for F in "$LST"; do tar -xOzf "$DLD/$ARC" --no-anchored -- "$F" > "$DST/$F" | ERR=$? ; done; exit $ERR
