@@ -1,0 +1,11 @@
+#!/bin/sh
+
+is_same_file () {
+    [ "$1" = "$2" ] && return 0
+    [ -z "$1" ] || [ -z "$2" ] && return 1
+    [ -L "$1" ] && is_same_file "`readlink -eq "$1"`" "$2" && return 0
+    [ -L "$2" ] && is_same_file "$1" "`readlink -eq "$2"`" && return 0
+    return 1
+    }
+
+is_same_file "$@" || exit $?

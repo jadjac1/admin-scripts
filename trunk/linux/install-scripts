@@ -11,7 +11,7 @@ for f in "$@"; do
 
    df="$dst${f##*/}"
 
-   echo -e "\n\nInstalling $df ..."  && wget -N "$rep$f" -P "$dst"  && chmod +x "$df"  # only installs newer scripts, replace -N with -nc to always overwrite
+   echo -e "\n\nInstalling $df ..."  && wget --no-cache -N "$rep$f" -P "$dst"  && chmod +x "$df"  # only installs newer scripts, replace -N with -nc to always overwrite
 
    ls -l "$df"
 done
