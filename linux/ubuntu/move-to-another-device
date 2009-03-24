@@ -1,0 +1,193 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          move-to-another-device
+# Required-Start:
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Moves mountpoints to a new devices according to fstab
+# Description:       Moves all mountpoints listed in /etc/move-to-another-device.list
+#		     to a new devices specified as mountpoint-NEW in fstab
+### END INIT INFO
+
+PATH=/lib/init:/sbin:/bin
+LOG="/root/${0##*/}.log"
+NPREFIX=""
+NSUFFIX="-NEW"
+SERVICE="move-to-another-device"
+MNTLIST="/etc/move-to-another-device.list"
+PREVIEW=0
+
+. /lib/lsb/init-functions
+# . /lib/init/mount-functions.sh
+
+log () {
+    echo `date "+[%Y-%m-%d %H:%M:%S]"` "$@" >> "$LOG"
+    }
+
+run () {
+    [ "$1" = "--noexit" ] && local noexit=1 && shift || local noexit=0
+    log "exec: $@"
+    [ "$PREVIEW" = "1" ] && return
+    "$@" >> "$LOG" 2>&1 || [ "$noexit" = "1" ] || error "$@ (check '$LOG')"
+    }
+
+error () {
+    case "$1" in ([0-9]|[1-9][0-9]|[1-2][0-9][0-9]) local exitcode=$1; shift; ;; (*) local exitcode=1; ;; esac
+    [ "$1" = "--noheader" ] && local header= && shift || local header="$HEADER"
+    echo "$header$@" >&2
+    log "error: $@ [$exitcode]"
+    exit $exitcode
+    }
+
+notify () {
+    case "$1" in ([0-9]|[1-9][0-9]|[1-2][0-9][0-9]) local exitcode=$1; shift; ;; (*) local exitcode=-; ;; esac
+    [ "$1" = "--noheader" ] && local header= && shift || local header="$HEADER"
+    echo "$header$@" >&2
+    log "$@ [$exitcode]"
+    [ "$exitcode" = "-" ] || exit $exitcode
+    }
+
+list () {
+    while read item; do [ -n "$item" ] && echo -n "$1$item$2"; done
+    }
+
+is_mounted () {
+    mount | grep -q "[[:space:]]$1[[:space:]]" || return $?
+    }
+
+is_mountpoint () {
+    grep -q "[[:space:]]$1[[:space:]]" /etc/fstab || return $?
+    }
+
+require_mountpoint () {
+    is_mountpoint "$1" || error "mountpoint '$1' is not defined in fstab"
+    }
+
+move_to_another_device () {
+    local mnt="$1"
+    local new="$NPREFIX$1$NSUFFIX"
+
+    require_mountpoint "$new"
+
+    [ -d "$new" ] || run mkdir -p "$new"
+    is_mounted "$new" || run mount "$new"
+    is_mountpoint "$mnt" && { is_mounted "$mnt" || run mount "$mnt"; }
+    run cp -axT "$mnt" "$new"
+    run umount "$new"
+
+    run /usr/bin/find "$mnt" -xdev -mindepth 1 -delete
+
+    is_mountpoint "$mnt" && run umount "$mnt" && run sed -i "s/^\([^#].*\s`sed_escape "$mnt"`\s.*\)$/#\1/" /etc/fstab
+
+    run sed -i "s/\(\s\)`sed_escape "$new"`\(\s\)/\1`sed_escape "$mnt"`\2/" /etc/fstab
+    run mount "$mnt"
+
+    run rmdir "$new"  # delete only if empty
+    }
+
+sed_escape () {
+    echo "$@" | sed 's/\([[*./\^$]\)/\\\1/g'
+    }
+
+running_as_service () { # does presume that "/etc/init.d/$SERVICE" is regular file, not symlink
+    HEADER="$SERVICE: "
+    [ "$0" = "/etc/init.d/$SERVICE" ] && return 0
+    [ -L "$0" ] && [ "`readlink -fq "$0"`" = "/etc/init.d/$SERVICE" ] && return 0 # cannot use -e with /lib/init/readlink
+    HEADER="${0##*/}: "
+    return 1
+    }
+
+service () {
+    case "$1" in
+
+    (start)
+	if [ -f "$MNTLIST" ]; then
+           cat "$MNTLIST" | while read mountpoint && [ -n "$mountpoint" ]; do move_to_another_device "$mountpoint"; done
+           else
+
+	   notify "empty mountpoint list '$MNTLIST'"
+	   fi
+
+        service remove
+        ;;
+
+    (stop)
+        ;;
+
+    (install)
+        shift
+        require_mountpoint "$NPREFIX$1$NSUFFIX"
+	[ -f "$MNTLIST" ] && run sed -i "/^`sed_escape "$1"`$/d" "$MNTLIST"
+        echo "$1" >> "$MNTLIST" || error "unable to write to mountpoint list '$MNTLIST'"
+        running_as_service || run cp "$0" "/etc/init.d/$SERVICE"
+        run chmod 777 "/etc/init.d/$SERVICE"
+        run /usr/sbin/update-rc.d -f "$SERVICE" remove > /dev/null
+        run /usr/sbin/update-rc.d "$SERVICE" start 34 S .
+        ;;
+
+    (remove)
+	[ -f "$MNTLIST" ] && run rm "$MNTLIST"
+        run /usr/sbin/update-rc.d -f "$SERVICE" remove
+        running_as_service || run rm "/etc/init.d/$SERVICE"
+        ;;
+
+    (status)
+        local levels="`/usr/bin/find /etc/rc?.d -name "???$SERVICE*" | sed "s/\/etc\/rc//;s/.d\//:/;s/$SERVICE//" | list " "`"
+
+        [ -n "$levels" ] && notify "enabled at runlevels:$levels" || notify "disabled"
+
+	[ -f "$MNTLIST" ] && local mountpoints="`cat "$MNTLIST" | list " '" "'"`" || local mountpoints=""
+
+        [ -n "$mountpoints" ] && notify "mountpoints to be moved:$mountpoints" || notify "empty mountpoint list '$MNTLIST'"
+	;;
+
+    (restart|reload|force-reload)
+        error 3 "command '$1' is not supported"
+	;;
+
+    (*)
+        notify 2 --noheader "Usage: ${0##*/} start|status|install|remove [MOUNTPOINT]"
+	exit 2
+        ;;
+        esac
+    }
+
+main () {
+    [ -n "$1" ] || notify 2 --noheader "Usage: ${0##*/} MOUNTPOINT [..]"
+
+    for mountpoint in "$@"; do process_mountpoint "$mountpoint"; done
+    }
+
+process_mountpoint () {
+    [ -n "$1" ] || return
+    [ -d "$1" ] || error "directory '$1' does not exist"
+
+    case "$1" in
+
+    (/|/etc|/root)
+        error "movement of '$1' is not implemented (patches are welcome)"
+        ;;
+
+    (/proc|/dev|/sys|/var/lock|/var/run)
+        error "movement of '$1' is not supported"
+        ;;
+
+    (/var)
+        service install "$1"
+        service status
+        ;;
+
+    (*)
+        move_to_another_device "$1"
+        ;;
+        esac
+    }
+
+
+if running_as_service; then
+    service "$@" 
+    else
+
+    main "$@"
+    fi
