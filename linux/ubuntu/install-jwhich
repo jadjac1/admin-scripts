@@ -7,7 +7,7 @@ REF="http://www.fullspan.com/proj/jwhich/"
 DLD="/var/cache/install"
 DST="$JAVA_HOME/jre/lib/ext"
 LST="jwhich.jar"
-OPT="-t1 --connect-timeout=5 -a \"$DLD/$ARC.log\""
+OPT="-t1 --connect-timeout=5 -a $DLD/$ARC.log"
 
 
 echo == Download $ARC from $REF to $DLD
