@@ -6,7 +6,7 @@ VER="${1:-2.0b4}"
 ARC="bsh-$VER.jar"
 REF="http://www.beanshell.org/download.html"
 DLD="$JAVA_HOME/jre/lib/ext"
-OPT="-t1 --connect-timeout=5 -a \"$DLD/$ARC.log\""
+OPT="-t1 --connect-timeout=5 -a $DLD/$ARC.log"
 
 echo == Download $ARC from $REF to $DLD
 
