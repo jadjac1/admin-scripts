@@ -6,7 +6,7 @@
 VER="${1:-5.0.1.GA-jdk6}"
 ARC="jboss-$VER.zip"
 DLD="/var/cache/install"
-DST="/opt"
+DST="/usr/local"
 
 
 echo == Download $ARC from sourceforge.net to $DLD
