@@ -1,0 +1,19 @@
+#!/bin/sh
+
+[ -n "$JAVA_HOME" ] || { JAVA_HOME="$(readlink -e $(which java))" && JAVA_HOME="${JAVA_HOME%%/jre/bin/java}" && JAVA_HOME="${JAVA_HOME%%/bin/java}"; }
+
+VER="${1:-10.2.0.4}"
+TYP="${2:-ojdbc14}"
+ARC="$TYP.jar"
+URL="http://download.oracle.com/otn/utilities_drivers/jdbc/${VER//./}/$ARC"
+DLD="$JAVA_HOME/jre/lib/ext"
+OPT="-t1 --connect-timeout=5 -a $DLD/$ARC.log"
+
+
+echo == Download $URL to $DLD
+
+[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
+
+wget $OPT "$URL" -NP "$DLD"
+
+[ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
