@@ -5,8 +5,9 @@
 
 VER="${1:-5.0.1.GA-jdk6}"
 ARC="jboss-$VER.zip"
+DIR="jboss-${VER%-jdk*}"
 DLD="/var/cache/install"
-DST="/usr/local"
+DST="/usr/lib"
 
 
 echo == Download $ARC from sourceforge.net to $DLD
@@ -18,14 +19,14 @@ wget-sourceforge jboss "$DLD/$ARC" $2
 [ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
 
 
-echo == Extract $DLD/$ARC to $DST
+echo == Extract $DLD/$ARC to $DST/$DIR
 
-unzip -qn "$DLD/$ARC" -d "$DST" || exit $?
+unzip -qn "$DLD/$ARC" -d "$DST" "$DIR/*" || exit $?
 
-if [ -d "$DST/jboss-${VER%-*}" ]; then
+if [ -d "$DST/$DIR" ]; then
 
     echo == Symlink $DST/jboss to $DST/jboss-${VER%-*}
 
-    ln -s "$DST/jboss-${VER%-*}" "$DST/jboss"
+    ln -s "$DST/$DIR" "$DST/jboss"
 
     fi

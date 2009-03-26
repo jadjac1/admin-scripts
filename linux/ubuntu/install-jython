@@ -31,7 +31,7 @@ if [ -e "$DST/jython" ]; then
     echo == Symlink $DST/cachedir to $TMP
 
     [ -d "$TMP" ] || mkdir "$TMP"
-    chmod 0777 "$TMP"
+    chmod 0755 "$TMP"
     ln -s "$TMP" "$DST/cachedir"
 
     fi
