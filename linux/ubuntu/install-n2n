@@ -9,6 +9,8 @@ echo == Checkout $REP to $DLD
 
 [ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
 
+aptitude install -y subversion
+
 cd "$DLD"
 svn co "$REP" . || exit $?
 
@@ -17,7 +19,7 @@ svn co "$REP" . || exit $?
 
 echo == Install debian packaging tools
 
-aptitude install dpkg-dev cdbs dpatch
+aptitude install -y dpkg-dev cdbs dpatch
 
 
 echo == Build n2n package

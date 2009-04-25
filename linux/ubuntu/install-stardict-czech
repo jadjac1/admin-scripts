@@ -1,0 +1,32 @@
+#!/bin/sh
+
+## English-Czech GNU FDL dictionary and Czech foreign words dictionary
+##  # see http://cz.cihar.com/software/slovnik/
+##  # see http://forum.ubuntu.cz/index.php?topic=1008.0
+##  # see http://www.abclinuxu.cz/clanky/tipy/-nielen-anglicko-ceske-slovnikove-databazy-pre-stardict
+##  # deb http://debian.cihar.com/ unstable main contrib non-free
+##  # deb-src http://debian.cihar.com/ unstable main contrib non-free
+##  # sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 51D473F38F6DC70853D42E5DE64A2AA53714DD6A
+
+# aptitude install -y stardict stardict-czech stardict-english-czech
+
+URL=http://cz.cihar.com/software/slovnik/
+ARC="stardict-*czech-latest.tar.gz"
+DLD=/var/cache/dictionaries-stardict
+DST=/usr/share/stardict/dic
+
+get_all () {
+    [ -z "$5" ] && echo "Usage: get_all label url filemask download-dir extract-dir [extract-mask]" >&2 && return 1
+
+    echo "Downloading $3 from $2"
+
+    [ -d "$4" ] || mkdir -p "$4" || return 1
+    [ -d "$5" ] || mkdir -p "$5" || return 1
+
+    wget -P "$4" -a "$4/.$1.log" -A "$3" -HND dl.cihar.com -rnd -l1 -t1 --connect-timeout=5 -erobots=off "$2"
+
+    # find -P "$4/" -type f -name "$3" -execdir tar -tvf "{}" \;
+    find -P "$4/" -type f -name "$3" -execdir echo "Extracting $DLD/{} to $5" \; -execdir tar -xof "{}" -C "$5" --no-same-permissions ${6:+--wildcards "$6"} \;
+    }
+
+get_all cihar.com "$URL" "$ARC" "$DLD" "$DST"

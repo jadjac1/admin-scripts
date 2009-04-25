@@ -1,0 +1,22 @@
+#!/bin/sh
+
+URL=http://stardict.sourceforge.net/download.php
+ARC="*TTS.tar.bz2"
+DLD=/var/cache/dictionaries-stardict
+DST=/usr/share
+
+get_all () {
+    [ -z "$5" ] && echo "Usage: get_all label url filemask download-dir extract-dir [extract-mask]" >&2 && return 1
+
+    echo "Downloading $3 from $2"
+
+    [ -d "$4" ] || mkdir -p "$4" || return 1
+    [ -d "$5" ] || mkdir -p "$5" || return 1
+
+    wget -P "$4" -a "$4/.$1.log" -A "download*.php,$3" -X /projects -HND sourceforge.net -rnd -l2 -t1 --connect-timeout=5 -erobots=off "$2"
+
+    # find -P "$4/" -type f -name "$3" -execdir tar -tvf "{}" \;
+    find -P "$4/" -type f -name "$3" -execdir echo "Extracting $DLD/{} to $5" \; -execdir tar -xof "{}" -C "$5" --no-same-permissions ${6:+--wildcards "$6"} \;
+    }
+
+get_all TTS "$URL" "$ARC" "$DLD" "$DST" "*TTS"
