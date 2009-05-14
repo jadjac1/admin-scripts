@@ -1,0 +1,6 @@
+# Email to receive security update reports (optional).
+# If empty, reports are not sent.
+# ADMIN=
+
+# Log file to record security updates (optional).
+# LOG=/var/log/apt-update-security.log

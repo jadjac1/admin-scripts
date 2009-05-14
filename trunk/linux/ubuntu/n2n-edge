@@ -1,0 +1,59 @@
+#!/bin/sh
+
+## /etc/init.d/n2n-edge: start and stop the n2n edge
+##
+## modified from http://wiki.freifunk.net/N2n
+
+N2N_CMD=/usr/bin/edge
+N2N_IF=n2n
+N2N_HTTPTUNNEL=0
+N2N_ROUTING=0
+N2N_VERBOSE=0
+N2N_NETMASK=255.255.255.0
+
+[ -r "/etc/default/${0##*/}" ]  && . "/etc/default/${0##*/}"
+
+check_parameter () {
+    [ -z "${$1}" ] && echo "Checking n2n VPN deamon failed: missing $1 in /etc/default/${0##*/}" >&2 && exit 6
+    }
+
+check_parameter N2N_IP
+check_parameter N2N_NETMASK
+check_parameter N2N_COMMUNITY
+check_parameter N2N_KEY
+check_parameter N2N_SUPERNODE
+
+. /lib/lsb/init-functions
+
+n2n_options () {
+    N2N_OPTS="-f -d $N2N_IF -a $N2N_IP ${N2N_PORT:+-p $N2N_PORT} ${N2N_MAC:+-m $N2N_MAC} ${N2N_MTU:+-M $N2N_MTU} -s $N2N_NETMASK -c $N2N_COMMUNITY -l $N2N_SUPERNODE"  #  -k $N2N_KEY
+    [ "$N2N_HTTPTUNNEL" = "1" ] && N2N_OPTS="$N2N_OPTS -t"
+    [ "$N2N_ROUTING" = "1" ]    && N2N_OPTS="$N2N_OPTS -r"
+    [ "$N2N_VERBOSE" = "1" ]    && N2N_OPTS="$N2N_OPTS -v"
+    export N2N_KEY
+    }
+
+case "$1" in
+  (start)
+        n2n_options
+        echo -n "Starting n2n VPN daemon: n2n-edge"
+        # echo $N2N_CMD $N2N_OPTS >&2
+        start-stop-daemon --start --quiet --exec "$N2N_CMD" -- $N2N_OPTS
+        echo "."
+        ## update IP Address
+        #ifconfig $N2N_IF $N2N_IP
+        ;;
+  (stop)
+        echo -n "Stopping n2n VPN daemon: n2n-edge"
+        start-stop-daemon --stop --quiet --exec "$N2N_CMD" --
+        echo "."
+        ;;
+  (restart)
+        $0 stop
+        $0 start
+        ;;
+
+  (*)
+        echo "Usage: ${0##*/} {start|stop|restart}"
+        exit 2
+esac
