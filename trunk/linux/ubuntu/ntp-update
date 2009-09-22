@@ -1,0 +1,4 @@
+#!/bin/sh
+invoke-rc.d openntpd stop
+ntpdate -v 0.debian.pool.ntp.org
+invoke-rc.d openntpd start
