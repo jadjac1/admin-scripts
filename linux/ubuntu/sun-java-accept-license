@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+# this script expects to be located in current working directory (`pwd`)
+
+export PATH="`pwd`:$PATH"
+chmod +x "$0"
+
+. /usr/share/debconf/confmodule
+db_set shared/accepted-sun-dlj-v1-1 true
