@@ -1,9 +1,18 @@
-#!/bin/sh -e
+#!/bin/sh -ex
+
+# see http://www.fifi.org/doc/debconf-doc/tutorial.html
 
 # this script expects to be located in current working directory (`pwd`)
+
+PKG=shared
+VAR=accepted-sun-dlj-v1-1
+TPL="$0.templates"
 
 export PATH="`pwd`:$PATH"
 chmod +x "$0"
 
+echo "Template: $PKG/$VAR\nType: boolean" > "$TPL"
+
 . /usr/share/debconf/confmodule
-db_set shared/accepted-sun-dlj-v1-1 true
+db_x_loadtemplatefile "$TPL"
+db_set "$PKG/$VAR" true
