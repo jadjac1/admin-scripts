@@ -268,7 +268,7 @@ accept_sun_java_license () {
     S="`mktemp "$DLD/accept_sun_java_license.XXXXXXXXXX" `" || return $?
     chmod +x "$S" || return $?
     echo "Template: shared/accepted-sun-dlj-v1-1\nType: boolean" > "$S.templates" || return $?
-    echo "#!/bin/sh -ex
+    echo "#!/bin/sh -e
         . /usr/share/debconf/confmodule
         db_x_loadtemplatefile \"$S.templates\"
         db_set shared/accepted-sun-dlj-v1-1 true" > "$S" || return $?
@@ -292,7 +292,7 @@ update_requested () { [ -n "$UPD" -a "$1" != 'updated' ]; }
 install_requested () { [ "$UPD" != 'only' ]; }
 rebuild_requested () { [ "$VER" = 'trunk' ] && update_requested; }
 has_current_package () { ! update_requested "$1" && [ -f "$DLD/$PKG" ]; }
-use_tgz_package () { has_current_package && run tar -C "$DLD" -zoxf "$DLD/$PKG"; }
+use_tgz_package () { has_current_package "$1" && run tar -C "$DLD" -zoxf "$DLD/$PKG"; }
 
 
 
