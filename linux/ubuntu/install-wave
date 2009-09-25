@@ -529,7 +529,7 @@ if install_requested; then
 
         echo "\nFurther steps:\n"
 
-        if [ -n "$COF" ]; then
+        if [ -z "$COF" ]; then
 
             echo "  * Configure the Openfire XMPP server:"
             echo
