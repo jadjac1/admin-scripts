@@ -1,5 +1,5 @@
 #!/bin/sh
-aptitude install openntpd unattended-upgrades
+aptitude install "$@" openntpd unattended-upgrades
 invoke-rc.d openntpd stop
 ntpdate -v 0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
 invoke-rc.d openntpd start
