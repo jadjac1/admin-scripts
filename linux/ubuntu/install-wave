@@ -535,15 +535,17 @@ if install_requested; then
             echo
             echo "     1. Navigate your browser to http://`hostname --fqdn`:9090/" 
             echo "     2. Follow the initial configuration wizard" 
-            echo "     3. Restart server from console: 'sudo invoke-rc.d openfire restart'" 
+            echo "     3. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
             echo "     4. Login to the web console and configure the server" 
             echo 
-            echo "      + Use the following shared secret key for wave external component:"
+            echo "      + Use the following shared secret key for the wave external component:"
             echo "        '$XSK'"
             echo
             echo "      + Configuration guides:" 
             echo "        http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide"
             echo "        http://code.google.com/p/wave-protocol/wiki/Installation"
+            echo
+            echo "     5. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
                     
         else
             echo "  * You can change the Openfire XMPP server settings at"
