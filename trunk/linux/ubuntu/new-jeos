@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo aptitude install -y openssh-server openntpd unattended-upgrades bash-completion man
+sudo aptitude install -y openssh-server openntpd unattended-upgrades bash-completion man nano
 sudo invoke-rc.d openntpd stop
 sudo ntpdate -v 0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
 sudo invoke-rc.d openntpd start
