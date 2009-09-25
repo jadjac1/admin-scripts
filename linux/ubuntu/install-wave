@@ -35,7 +35,7 @@ dn_get () { ### distinguished_name empty_value [attribute] ... ### \ escaping is
         shift; done
     }
 dn_set () { ### [attribute, value] ...
- 
+    local O=
     while [ -n "$1" ]; do
         [ -n "$2" ] && { [ -z "$O" ] && O=1 || echo -n ', '; echo -n "$1=$2"; } 
         shift 2
