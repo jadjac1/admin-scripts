@@ -267,9 +267,9 @@ accept_sun_java_license () {
     local S
     S="`mktemp "$DLD/accept_sun_java_license.XXXXXXXXXX" `" || return $?
     chmod +x "$S" || return $?
-    echo "Template: shared/accepted-sun-dlj-v1-1\nType: boolean" > "$S.templates" || return $?
+    echo "Template: shared/accepted-sun-dlj-v1-1\nType: boolean" > "$S.templates" || return $?
     echo "#!/bin/sh -e
-        . /usr/share/debconf/confmodule
+        . /usr/share/debconf/confmodule
         db_x_loadtemplatefile \"$S.templates\"
         db_set shared/accepted-sun-dlj-v1-1 true" > "$S" || return $?
     export PATH="$PATH:$DLD"
@@ -281,13 +281,13 @@ accept_sun_java_license () {
 III () { ### header [name [version]]
     HDR="$1"
     APP="${2:-${0##*/}}" # provided name or this script basename
-    VER="$3"
+    VER="$3"
     echo; log "=== Processing $HDR $VER"
     [ -z "$VER" -o "$VER" = "trunk" ] && PID="${APP}" || PID="${APP}-${VER}"
     SRC="$DLD/${PID}"
     }
 II  () { log "--- $@"; }
-info_requested () { [ -n "$INF" ]; }
+info_requested () { install_requested && [ -n "$INF" ]; }
 update_requested () { [ -n "$UPD" -a "$1" != 'updated' ]; }
 install_requested () { [ "$UPD" != 'only' ]; }
 rebuild_requested () { [ "$VER" = 'trunk' ] && update_requested; }
@@ -317,7 +317,7 @@ if install_requested; then
 
     if try check_packages i $PKGLIC; then
         try check_packages i $PKG || run sudo aptitude install -q -y $PKG
-    elif [ "$LIC" = accepted ] && try accept_sun_java_license; then
+    elif [ "$LIC" = accepted ] && try accept_sun_java_license; then
         run sudo aptitude install -q -y $PKGLIC $PKG
     else
         run interactive: sudo aptitude install -y $PKGLIC $PKG
@@ -371,7 +371,7 @@ if [ "$VER" = trunk ]; then
 
     if [ -d "$SRC/.svn" ]; then
         update_requested && run svn update --non-interactive "$SRC"
-    else
+    else
         [ -d "$SRC" ] || use_tgz_package || run svn checkout --non-interactive "$URL" "$SRC"
         fi
 
@@ -514,53 +514,55 @@ if install_requested; then
 
         II  "Symlinking scripts to $BIN"
 
-        for _ in "$DST"/run-*.sh; do
+        for _ in "$DST"/run-*.sh; do
             [ "$_" = "$CNF" ] && continue
             _2="$BIN/wave-${_##*/run-}"
             _2="${_2%.sh}"
             run ln -svnf "$_" "$_2"
             done
         fi
-
-
-    II  "Done."
-
-    if info_requested; then
-
-        echo "\nFurther steps:\n"
-
-        if [ -z "$COF" ]; then
-
-            echo "  * Configure the Openfire XMPP server:"
-            echo
-            echo "     1. Navigate your browser to http://`hostname --fqdn`:9090/" 
-            echo "     2. Follow the initial configuration wizard" 
-            echo "     3. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
-            echo "     4. Login to the web console and configure the server" 
-            echo 
-            echo "      + Use the following shared secret key for the wave external component:"
-            echo "        '$XSK'"
-            echo
-            echo "      + Configuration guides:" 
-            echo "        http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide"
-            echo "        http://code.google.com/p/wave-protocol/wiki/Installation"
-            echo
-            echo "     5. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
-                    
-        else
-            echo "  * You can change the Openfire XMPP server settings at"
-            echo "    http://`hostname --fqdn`:9090/" 
-            fi
-
-        echo
-        echo "  * You can start the wave server using $DST/run-server.sh"
-        [ -n "$BIN" ] && echo "    or $BIN/wave-server"
-
-        echo
-        echo "  * You can start the console client using $DST/run-client-console.sh"
-        [ -n "$BIN" ] && echo "    or $BIN/wave-client-console"
-
-        echo
-
-        fi
     fi
+
+
+II  "Done."
+
+if info_requested; then
+
+    echo "\nFurther steps:\n"
+
+    if [ -z "$COF" ]; then
+
+        echo "  * Configure the Openfire XMPP server:"
+        echo
+        echo "     1. Navigate your browser to http://`hostname --fqdn`:9090/" 
+        echo "     2. Follow the initial configuration wizard" 
+        echo "     3. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
+        echo "     4. Login to the web console and configure the server" 
+        echo 
+        echo "      + Use the following shared secret key for the wave external component:"
+        echo "        '$XSK'"
+        echo
+        echo "      + Configuration guides:" 
+        echo "        http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide"
+        echo "        http://code.google.com/p/wave-protocol/wiki/Installation"
+        echo
+        echo "     5. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
+                
+    else
+        echo "  * You can change the Openfire XMPP server settings at"
+        echo "    http://`hostname --fqdn`:9090/" 
+        fi
+
+    echo
+    echo "  * You can start the wave server using $DST/run-server.sh"
+    [ -n "$BIN" ] && echo "    or $BIN/wave-server"
+
+    echo
+    echo "  * You can start the console client using $DST/run-client-console.sh"
+    [ -n "$BIN" ] && echo "    or $BIN/wave-client-console"
+
+    echo
+
+    fi
+
+
