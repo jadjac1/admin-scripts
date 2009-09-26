@@ -11,12 +11,21 @@
 # http://code.google.com/p/wave-protocol/wiki/Certificates
 # http://en.wikipedia.org/wiki/X.509
   
-# For RedHat based distros use James Purser script:
+# For RedHat (and Debian too) based distros you can use the script by James Purser:
 # http://jamespurser.com.au/blog/WRS_Installer_Script
 
 # TODO: 
-#   * openfire configuration
-#   * daemon installation (when needed)
+#
+#   * install WRS daemon running under dedicated user (when needed)
+#
+#   * detect if source was actually updated, and rebuild WRS + restart daemon in this case
+#     (if unattended/scheduled updates are needed)
+#     (does not make much sense until waves are persistent between WRS restarts)
+#
+#   * read all default settings from an existing installation, not only XMPP secret key
+#
+#   * pre-configure Openfire (would be only good for fully automatic installations)
+#
 #   * ejabberd support (feel free to implement it if you need it)
 
 
