@@ -3,7 +3,7 @@
 # Installs Sun Java 6, required build tools, Openfire XMPP server, Protocol Buffers
 # and Wave Reference Server on Debian/Ubuntu
 
-# Contact: jan.killian at gmail ... patches/enhancements are welcome
+# Contact: jan.killian at gmail ... bugs/patches/enhancements/requests are welcome
 
 # References:
 # http://code.google.com/p/wave-protocol/wiki/Installation
