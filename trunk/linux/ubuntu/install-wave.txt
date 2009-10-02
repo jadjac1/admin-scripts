@@ -49,15 +49,15 @@ Configure Openfire server according to the instructions provided by the script.
 
 Run the wave server and the echoy agent:
 
-    wave-server >> ~/wave-server.log 2>> ~/wave-server.error.log &
-    wave-agent-echoey >> ~/wave-agent-echoey.log 2>> ~/wave-agent-echoey.error.log &
+    wave-server >&2 2>> ~/wave-server.log &
+    wave-agent-echoey >&2 2>> ~/wave-agent-echoey.log &
 
     * Using 'sudo' to run them under root is neither needed, nor recommended.
 
 
 Run your wave client:
 
-    wave-client-console $USER 2>> ~/wave-client-console.error.log
+    wave-client-console $USER
 
 
 List available commands, start a new wave, open it, invite echoey, exchange greets and leave.

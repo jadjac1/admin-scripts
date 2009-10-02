@@ -545,8 +545,12 @@ if info_requested; then
 
         echo "  * Configure the Openfire XMPP server:"
         echo
-        echo "     1. Navigate your browser to http://`hostname --fqdn`:9090/" 
+        echo "     1. Navigate your browser to https://`hostname --fqdn`:9091/" 
         echo "     2. Follow the initial configuration wizard" 
+        echo 
+        echo "      + Use the full domain name for server name:"
+        echo "        '$DOM'"
+        echo 
         echo "     3. Restart the server from console: 'sudo invoke-rc.d openfire restart'" 
         echo "     4. Login to the web console and configure the server" 
         echo 
@@ -561,7 +565,7 @@ if info_requested; then
                 
     else
         echo "  * You can change the Openfire XMPP server settings at"
-        echo "    http://`hostname --fqdn`:9090/" 
+        echo "    https://`hostname --fqdn`:9091/" 
         fi
 
     echo
