@@ -1,86 +1,106 @@
-Testing the Wave Reference Server (WRS) on Debian/Ubuntu server
-===============================================================
+Running the Wave Reference Server (WRS) on Debian/Ubuntu server
+***************************************************************
 
 
-If you have a new server, you can optionally install OpenNTPd for time synchronisation
-and enable unattended security updates:
+Prerequisites
+=============
+
+* You need access to the Debian/Ubuntu server, and permisson to use sudo (default).
+
+* If you have a new server, you can optionally install OpenNTPd for time synchronisation
+  and enable unattended security updates::
 
     wget -N http://admin-scripts.googlecode.com/svn/trunk/linux/ubuntu/new-server
     cat new-server
     sudo sh new-server
 
-    * If you run a JeOS (just enough OS) version, you may consider to use the new-jeos
-      script instead, which also installs OpenSSH, bash completion, man pages and nano.
+  - If you run a JeOS (Just enough OS) edition, you may consider to use the new-jeos
+    script instead, which also installs OpenSSH, bash completion, man pages and nano.
 
 
-Get the WRS installation script:
+
+Installation
+============
+
+* Get the WRS installation script::
 
     wget -N http://admin-scripts.googlecode.com/svn/trunk/linux/ubuntu/install-wave
 
-    OR shorter:
+  - You may alternatively use the bit.ly shorcut::
 
-    wget -N http://bit.ly/install-wave
+      wget -N http://bit.ly/install-wave
 
 
-Check the available options:
+* Check the available options::
 
     sh install-wave --help
 
 
-Install Sun Java 6, Openfire XMPP server and Wave protocol:
+* Install Sun Java 6, Openfire XMPP server and Wave protocol::
 
     sudo sh install-wave
 
-    * You can use any available options to override the default settings,
-      or remove the 'sudo' command to install wave for current user only.
-      The installation script will still need sudo for a few commands though.
+  - You can use any available options to override the default settings,
+    or remove the `sudo` command to install wave for current user only.
+    The installation script will still need sudo for a few commands though.
 
-    * For unattended installation you need to accept the Sun Java License
-      via the --accept-sun-java-license option.
+  - For unattended installation you need to accept the Sun Java License
+    via the `--accept-sun-java-license` option.
 
-    * Detailed installation protocols are created in the cache directory,
-      see install-wave options for the specific location.
+  - Detailed installation protocols are created in the cache directory,
+    see install-wave options for the specific location.
 
-    * See also:
-      http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide
-      http://code.google.com/p/wave-protocol/wiki/Installation
-      http://www.onthetopofthewave.com/2009/09/wave-federation-prototype-server/
-      http://groups.google.com/group/wave-protocol
+  - See also:
 
-
-Configure Openfire server according to the instructions provided by the script.
+    + `http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide <http://jamespurser.com.au/blog/Wave_Reference_Server_-_A_Startup_Guide>`_
+    + http://code.google.com/p/wave-protocol/wiki/Installation
+    + http://www.onthetopofthewave.com/2009/09/wave-federation-prototype-server/
+    + http://groups.google.com/group/wave-protocol
 
 
-Run the wave server and the echoy agent:
+* Configure Openfire server according to the instructions provided by the script.
+
+
+
+Running
+=======
+
+* Run the wave server and the echoy agent::
 
     wave-server >&2 2>> ~/wave-server.log &
     wave-agent-echoey >&2 2>> ~/wave-agent-echoey.log &
 
-    * Using 'sudo' to run them under root is neither needed, nor recommended.
+  - Using `sudo` to run them under root is neither needed, nor recommended.
 
 
-Optionally use multitail for WRS and Openfire logspotting:
+* Optionally use multitail for WRS and Openfire logspotting::
 
-    sudo multitail -M 0 ~/wave-server.log --mergeall -ci red /var/log/openfire/error.log -ci yellow /var/log/openfire/warn.log -ci green /var/log/openfire/info.log -ci blue /var/log/openfire/debug.log
+    sudo multitail -M 0 ~/wave-server.log --mergeall \
+        -ci red /var/log/openfire/error.log \
+        -ci yellow /var/log/openfire/warn.log \
+        -ci green /var/log/openfire/info.log \
+        -ci blue /var/log/openfire/debug.log
 
-    * sudo is needed for accessing /var/log/openfire
-    * you may need to install multitail first:
+  - Sudo is needed for accessing `/var/log/openfire`.
+  - You may need to install multitail first::
 
-        sudo aptitude install multitail
-        sudo sed -i 's/^\(check_mail:\).*/\10/' /etc/multitail.conf    ### disable mail check
+      sudo aptitude install multitail
+      sudo sed -i 's/^\(check_mail:\).*/\10/' /etc/multitail.conf    ### disable mail check
 
-    * optionally you may prepend 'screen ' before the command to run it inside its own screen,
-      then spawn a working copy of bash (ctrl+a, c) and switch between them (ctrl+a, ctrl+a)
-    * there's another advantage of using screen: if your ssh conection drops, the programs
-      started under screen keep running and you can reconnect to them via 'screen -DR' command
+  - You may optionally prepend `screen` before the command to run it inside its own screen,
+    then spawn a working copy of bash (ctrl+a, c) and switch between them (ctrl+a, ctrl+a).
+    There's also another advantage of using screen: if your ssh conection drops, the programs
+    started under screen keep running and you can reconnect to them in new session with::
+
+      screen -DR
 
 
-Run your wave client:
+* Run your wave client::
 
     wave-client-console $USER
 
 
-List available commands, start a new wave, open it, invite echoey, exchange greets and leave.
+* List available commands, start a new wave, open it, invite echoey, exchange greets and leave::
 
     /
     /new
@@ -89,55 +109,78 @@ List available commands, start a new wave, open it, invite echoey, exchange gree
     Hi!
     ^D
 
-    * See also:
-      http://code.google.com/p/wave-protocol/wiki/ConsoleClient
+  - See also:
+
+    + http://code.google.com/p/wave-protocol/wiki/ConsoleClient
 
 
-Check the wave server and the echoy agent processes, and quit them via TERM signal:
+* Check the wave server and the echoy agent processes, and quit them via TERM signal::
 
     ps -FC java|grep fedone[-]
 
     kill `ps -FC java|grep fedone[-]|awk '{print $2}'`
 
-    * Bum, your waves are gonna now, they were only kept in memory.
-    * I may update install-wave script to allow running server and agents as deamons
-      when suitable with later WRS releases.
+  - Bum, your waves are gonna now, they were only kept in memory.
+  - I may update install-wave script to allow running server and agents as deamons
+    when suitable with later WRS releases.
 
 
-Current WRS version (0.2, as of 2009/09/25) limitations:
 
-    * No wave persistence between server restarts (memory only, no RDBMS backend)
-    * No robots or embedding API
+Limitations
+===========
 
+* Current WRS version (0.2, as of 2009/09/25) limitations:
 
-Updating the WRS:
-
-    * Feel free to run the install-wave script anytime to update the WRS.
-
-    * Currently you need to specify all your custom options again,
-      except for the XMPP secret key, which is automatically read
-      from an existing installation.
-
-    * Currently you also need to manually check the wave-protocol.log
-      to see if there were any WRS updates and restart the server in that case.
+  - No wave persistence between server restarts (memory only, no RDBMS backend)
+  - No robots or embedding API
 
 
-Testing server federation:
+* Wave installation script todo:
 
-    * You need to have an A and a SRV DNS records for your domain (server host FQDN)
-      and also for a new wave subdomain of it ('wave.' + server host FQDN).
+  - Other configuration options, like ports (as needed)
+  - Install WRS daemon running under dedicated user (when needed)
+  - Detect if source was actually updated, and rebuild WRS + restart daemon in this case
+    (if unattended/scheduled updates are needed)
+    (does not make much sense until waves become persistent between WRS restarts)
+  - Read all default settings from an existing installation, not only XMPP secret key
+  - Pre-configure Openfire (would be only good for fully automatic installations)
+  - Ejabberd support (feel free to implement it if you need it)
 
-    * You can use the dig command to check if the records are set to the server IP.
-      You may need to install dnsutils package first: 'sudo aptitude install dnsutils'.
 
-        dig +short -t A `hostname --fqdn`
-        dig +short -t A wave.`hostname --fqdn`
 
-        dig +short -t SRV _xmpp-server._tcp.`hostname --fqdn`
-        dig +short -t SRV _xmpp-server._tcp.wave.`hostname --fqdn`
+Updating
+========
 
-    * If your server is behind NAT, you also need to forward port 5269 to the server.
+* Feel free to run the install-wave script anytime to update the WRS.
 
-    * See also:
-      http://code.google.com/p/wave-protocol/wiki/Federation
-      http://jamespurser.com.au/blog/Federating_Your_Wave_Server
+* Currently you need to specify all your custom options again,
+  except for the XMPP secret key, which is automatically read
+  from an existing installation.
+
+* Currently you also need to manually check the wave-protocol.log
+  to see if there were any WRS updates and restart the server in that case.
+
+
+
+Federation
+==========
+
+* You need to have an A and a SRV DNS records for your domain (server host FQDN)
+  and also for a new wave subdomain of it (`wave.` + server host FQDN).
+
+* You can use the dig command to check if the records are set to the server IP::
+
+    sudo aptitude install dnsutils   # install dig command from the dnsutils package
+
+    dig +short -t A `hostname --fqdn`
+    dig +short -t A wave.`hostname --fqdn`
+
+    dig +short -t SRV _xmpp-server._tcp.`hostname --fqdn`
+    dig +short -t SRV _xmpp-server._tcp.wave.`hostname --fqdn`
+
+* If your server is behind NAT, you also need to forward port 5269 to the server.
+
+* See also:
+
+  - http://code.google.com/p/wave-protocol/wiki/Federation
+  - http://jamespurser.com.au/blog/Federating_Your_Wave_Server
