@@ -17,6 +17,10 @@ Get the WRS installation script:
 
     wget -N http://admin-scripts.googlecode.com/svn/trunk/linux/ubuntu/install-wave
 
+    OR shorter:
+
+    wget -N http://bit.ly/install-wave
+
 
 Check the available options:
 
