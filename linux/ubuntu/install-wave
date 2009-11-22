@@ -91,7 +91,7 @@ if [ "$USER" = root ]; then
 else
     SVC=
     DST=~/.wave
-    [ -d ~/.bin ] && BIN=~/.bin || BIN=
+    [ -d ~/bin ] && BIN=~/bin || BIN=
     DLD=~/.install
     fi
 
@@ -125,7 +125,7 @@ USE="Usage: $APP [OPTIONS]
 
   -b, --bin [DIRECTORY]     directory (in path) for wave client/server run scripts;
                             these scripts are created only if directory is provided;
-                            defaults to ~/.bin if it exists (/usr/bin for root)
+                            defaults to ~/bin if it exists (/usr/bin for root)
 
   -s, --service [USER]      username for running wave server as a daemon;
                             the daemon is created only if username is provided;				
