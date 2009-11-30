@@ -442,7 +442,7 @@ if install_requested; then
         II  "Building $SRC/proto_src"
 
         run setconf "$CNF" protoc_dist "$SPB"
-	run find ./proto_src/ -name *.java -type f -print -delete 
+	run find ./proto_src/ -name '*.java' -type f -print -delete 
         run ant -f build-proto.xml
 	run ant clean
 

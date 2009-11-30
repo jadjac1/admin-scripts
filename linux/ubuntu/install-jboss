@@ -3,18 +3,50 @@
 # http://sourceforge.net/project/showfiles.php?group_id=22866&package_id=16942
 # http://www.jboss.org/jbossas/downloads/
 
-VER="${1:-5.0.1.GA-jdk6}"
+VER="${1:-5.1.0.GA-jdk6}"
+MD5="${1:+ca64add783eb38c123ddb0dcd8465e3f}"
 ARC="jboss-$VER.zip"
 DIR="jboss-${VER%-jdk*}"
 DLD="/var/cache/install"
 DST="/usr/lib"
 
+md5check() { ### [path/]file [hash] [checksum-file] [hash-mismatch-message]
+    local PKG MD5 CHK MSG RES
+    PKG="$1"; MD5="$2"; CHK="${3:-$PKG.md5}"; MSG="$4"
+    [ -z "$PKG" ] && echo "$0: missing file argument" >&2 && return 1
+    [ ! -f "$PKG" ] && echo "$0: cannot find '$PKG'" >&2 && return 1
+    ### if md5hash is not provided, then compute it, print it and create a checksum file
+    [ -z "$MD5" ] && { MD5="`md5sum "$PKG" | cut -f1 -d " "`" && echo "$MD5" && echo "$MD5 *${PKG##*/}" > "$CHK" && touch -r "$PKG" "$CHK"; return $?; }
+    [ ! -e "$CHK" ] && echo "$MD5 *${PKG##*/}" > "$CHK" && touch -r "$PKG" "$CHK"
+    echo "$MD5 *$PKG" | md5sum -c || { RES=$?; [ -n "$MSG" ] && echo "$0: $MSG" >&2; return $RES; }
+    }
+
+get_sf() { ### project version [destdir] [package] [mirror] [md5] [hash-mismatch-message]
+    ### http://sourceforge.net/apps/trac/sourceforge/wiki/Mirrors
+    ### [asia] id:biznetnetworks jp:jaist kr:cdnetworks-kr-1/2 tw:nchc tw:ncu  [australia] au:internode au:transact au:waix
+    ### [south-america] br:ufpr  [canada] ca:iweb  [usa] ca:internap ca:cdnetworks-us-1/2 fl:hivelocity ny:voxel tx:softlayer va:superb-east wa:superb-west
+    ### [europe] ch:puzle ch:switch cz:ignum de:dfn de:mesh fr:freefr fr:ovh ie:heanet it:fastbull it:garr nl:surfnet pt:nsfi uk:kent sv:sunet
+
+    local URL PRJ VER DST PKG MIR MD5 MSG 
+    PRJ="$1"; VER="$2"; DST="${3:-.}"; PKG="${4:-$PRJ-$VER.tar.gz}"; MIR="$5"; MD5="$6"; MSG="$7"
+    [ -z "$PRJ" -o -z "$VER" ] && echo "$0: missing project or version argument" >&2 && return 1
+    [ -d "$DST" ] || mkdir -p "$DST" || return $?
+
+    URL="http://downloads.sourceforge.net/$PRJ/$PRJ/$VER/$PKG"
+    [ -n "$MIR" ] && URL="$URL?use_mirror=$MIR"
+    SFD="sourceforge.net"
+    SFX="/project/,/projects/,/search/,/svn/,/viewvc/,/docman/,/news/,/mail/,/pm/,/account/,/community/,/job/,/softwaremap/"
+
+    [ -n "$MD5" ] && [ -f "$DST/$PKG" ] && md5check "$DST/$PKG" "$MD5" && return
+    wget -rnd -l1 -t1 --no-cache --connect-timeout=5 -e robots=off -NP "$DST" -HD "$SFD" -X "$SFX" -A "$PKG" -- "$URL" || return $?
+    md5check "$DST/$PKG" "$MD5" "$MSG" || return $?
+    }
 
 echo == Download $ARC from sourceforge.net to $DLD
 
 [ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
 
-wget-sourceforge jboss "$DLD/$ARC" $2
+get_sf jboss "$VER" "$DLD" "$ARC" "$MD5"
 
 [ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
 

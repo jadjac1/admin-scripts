@@ -1,11 +1,6 @@
 #!/bin/sh
 
-VER="${1:-2.5.1}"
-MD5="${1:+2ee978eff4306b23753b3fe9d7af5b37}"
-ARC="jython_installer-$VER.jar"
-DLD="/var/cache/install"
-DST="/usr/lib/jython"
-TMP="/var/cache/jython"
+[ -z "$2" ] && echo "Usage: ${0##*/} project version [destdir] [package] [mirror] [md5]" >&2 && exit 2
 
 md5check() { ### [path/]file [hash] [checksum-file] [hash-mismatch-message]
     local PKG MD5 CHK MSG RES
@@ -39,31 +34,4 @@ get_sf() { ### project version [destdir] [package] [mirror] [md5] [hash-mismatch
     md5check "$DST/$PKG" "$MD5" "$MSG" || return $?
     }
 
-echo == Download $ARC from sourceforge.net to $DLD
-
-[ -d "$DLD" ] || mkdir -p "$DLD" || exit 1
-
-get_sf jython "$VER" "$DLD" "$ARC" "$MD5"
-
-[ ! -f "$DLD/$ARC" ] && echo !! Download failed. Check $DLD/$ARC.log for details. >&2 && exit 1
-
-
-echo == Install $DLD/$ARC to $DST
-
-java -jar "$DLD/$ARC" -s -t standard -d "$DST" || exit $?
-
-
-if [ -e "$DST/jython" ]; then
-
-    echo == Symlink /usr/bin/jython to $DST/jython
-
-    ln -s "$DST/jython" /usr/bin/jython
-
-
-    echo == Symlink $DST/cachedir to $TMP
-
-    [ -d "$TMP" ] || mkdir "$TMP"
-    chmod 0755 "$TMP"
-    ln -s "$TMP" "$DST/cachedir"
-
-    fi
+get_sf "$@"
